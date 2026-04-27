@@ -1,6 +1,44 @@
+# Ambiente
 .env
+.env.local
 .venv/
+venv/
+
+# Python bytecode
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+*.pyc
+*.pyo
+
+# Build / distribuição
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# Testes e cobertura
 .pytest_cache/
-__pycache__/
-*.pyc  
-uv.lock
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Type checkers / linters
+.mypy_cache/
+.ruff_cache/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Lock (gerado automaticamente, não precisa de versionamento em libs — projetos podem incluir)
+# uv.lock  ← manter versionado para reprodutibilidade
+
