@@ -4,7 +4,7 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.ai.llm_client import LLMClient
-from src.models.db import get_session
+from src.models.db import AsyncSessionLocal, get_session
 from src.repositories.cliente_repo import ClienteRepo
 from src.repositories.dashboard_repo import DashboardRepo
 from src.repositories.recomendacao_repo import RecomendacaoRepo
@@ -28,8 +28,8 @@ def get_kanban_service(session: SessionDep) -> KanbanService:
     return KanbanService(ClienteRepo(session))
 
 
-def get_dashboard_service(session: SessionDep) -> DashboardService:
-    return DashboardService(DashboardRepo(session), RecomendacaoRepo(session))
+def get_dashboard_service() -> DashboardService:
+    return DashboardService(AsyncSessionLocal)
 
 
 def get_recomendacao_service(session: SessionDep) -> RecomendacaoService:

@@ -1,4 +1,7 @@
+import asyncio
 from decimal import Decimal
+
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.models.schemas import DashboardResponse
 from src.repositories.dashboard_repo import DashboardRepo
@@ -6,11 +9,18 @@ from src.repositories.recomendacao_repo import RecomendacaoRepo
 
 
 class DashboardService:
-    def __init__(self, dashboard_repo: DashboardRepo, rec_repo: RecomendacaoRepo) -> None:
-        self._dash = dashboard_repo
-        self._rec = rec_repo
+    def __init__(self, session_factory: async_sessionmaker[AsyncSession]) -> None:
+        self._factory = session_factory
 
     async def get_dashboard(self) -> DashboardResponse:
+        async def _dash(fn):
+            async with self._factory() as s:
+                return await fn(DashboardRepo(s))
+
+        async def _rec(fn):
+            async with self._factory() as s:
+                return await fn(RecomendacaoRepo(s))
+
         (
             total,
             por_status,
@@ -21,16 +31,16 @@ class DashboardService:
             taxa,
             sem_interacao,
             rec_pendentes,
-        ) = await _gather(
-            self._dash.total_clientes(),
-            self._dash.clientes_por_status(),
-            self._dash.ticket_total(),
-            self._dash.ticket_medio(),
-            self._dash.valor_em_negociacao(),
-            self._dash.valor_fechado(),
-            self._dash.taxa_conversao(),
-            self._dash.clientes_sem_interacao(),
-            self._rec.count_pendentes(),
+        ) = await asyncio.gather(
+            _dash(lambda r: r.total_clientes()),
+            _dash(lambda r: r.clientes_por_status()),
+            _dash(lambda r: r.ticket_total()),
+            _dash(lambda r: r.ticket_medio()),
+            _dash(lambda r: r.valor_em_negociacao()),
+            _dash(lambda r: r.valor_fechado()),
+            _dash(lambda r: r.taxa_conversao()),
+            _dash(lambda r: r.clientes_sem_interacao()),
+            _rec(lambda r: r.count_pendentes()),
         )
 
         return DashboardResponse(
@@ -44,8 +54,3 @@ class DashboardService:
             clientes_sem_interacao=sem_interacao,
             recomendacoes_pendentes=rec_pendentes,
         )
-
-
-async def _gather(*coros):
-    import asyncio
-    return await asyncio.gather(*coros)
