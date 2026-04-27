@@ -83,7 +83,7 @@ class DorOportunidadeOut(BaseModel):
     tipo: TipoDorOportunidade
     descricao: str
     impacto: str | None
-    prioridade: int | None
+    prioridade: str | None
 
 
 class InteracaoResumo(BaseModel):

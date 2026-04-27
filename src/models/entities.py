@@ -29,6 +29,7 @@ class FunilStatusCodigo(str, Enum):
 class TipoDorOportunidade(str, Enum):
     DOR = "DOR"
     OPORTUNIDADE = "OPORTUNIDADE"
+    OBJECAO = "OBJECAO"
 
 
 class TipoInteracao(str, Enum):
@@ -42,12 +43,17 @@ class TipoRecomendacao(str, Enum):
     RECOMENDACAO_ABORDAGEM = "RECOMENDACAO_ABORDAGEM"
     PROXIMA_ACAO = "PROXIMA_ACAO"
     SUGESTAO_PROPOSTA = "SUGESTAO_PROPOSTA"
+    FOLLOWUP = "FOLLOWUP"
+    ALERTA_FUNIL = "ALERTA_FUNIL"
+    RISCO_PERDA = "RISCO_PERDA"
+    OPORTUNIDADE_CROSS_SELL = "OPORTUNIDADE_CROSS_SELL"
 
 
 class StatusRecomendacao(str, Enum):
     PENDENTE = "PENDENTE"
     RESOLVIDA = "RESOLVIDA"
     IGNORADA = "IGNORADA"
+    CONCLUIDA = "CONCLUIDA"
 
 
 class PerfilUsuario(str, Enum):
@@ -138,7 +144,7 @@ class DorOportunidade(Base):
     tipo: Mapped[str] = mapped_column(SAEnum(TipoDorOportunidade), nullable=False)
     descricao: Mapped[str] = mapped_column(Text, nullable=False)
     impacto: Mapped[str | None] = mapped_column(String(50))
-    prioridade: Mapped[int | None] = mapped_column(Integer)
+    prioridade: Mapped[str | None] = mapped_column(String(50))
     origem: Mapped[str | None] = mapped_column(String(100))
 
     cliente: Mapped["Cliente"] = relationship(back_populates="dores_oportunidades")
